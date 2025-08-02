@@ -1,0 +1,52 @@
+https://leetcode.com/problems/last-day-where-you-can-still-cross/?envType=problem-list-v2&envId=array
+
+class Solution {
+    public int latestDayToCross(int row, int col, int[][] cells) {
+        int start = 0, end = cells.length - 1;
+
+        while (start <= end) {
+            int mid = start + (end - start) / 2;
+
+            int[][] island = new int[row][col];
+            for (int i = 0; i <= mid; i++) {
+                island[cells[i][0] - 1][cells[i][1] - 1] = 1;
+            }
+
+            if (canCross(island)) {
+                start = mid + 1;  // try later days
+            } else {
+                end = mid - 1;    // try earlier days
+            }
+        }
+
+        return start;  // last successful day
+    }
+
+    private boolean canCross(int[][] island) {
+        int rows = island.length, cols = island[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+
+        for (int j = 0; j < cols; j++) {
+            if (island[0][j] == 0 && dfs(island, 0, j, visited)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean dfs(int[][] island, int i, int j, boolean[][] visited) {
+        int rows = island.length, cols = island[0].length;
+
+        if (i < 0 || i >= rows || j < 0 || j >= cols ||
+            island[i][j] == 1 || visited[i][j]) return false;
+
+        if (i == rows - 1) return true;
+
+        visited[i][j] = true;
+
+        return dfs(island, i + 1, j, visited) ||
+               dfs(island, i - 1, j, visited) ||
+               dfs(island, i, j + 1, visited) ||
+               dfs(island, i, j - 1, visited);
+    }
+}
